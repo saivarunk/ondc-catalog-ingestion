@@ -45,8 +45,6 @@ def patch_document_with_dense_vectors(index_name, doc_id):
         dense_vectors = generate_dense_vectors(key, value)
         if len(dense_vectors) > 0:
             updated_doc[f"{key}_dense_vector"] = dense_vectors
-        else:
-            print(f"Skipping field {key} for document {doc_id}, {value}")
     
     # Update document in Elasticsearch
     client.update(index=index_name, id=doc_id, body={"doc": updated_doc})
@@ -55,7 +53,7 @@ def patch_document_with_dense_vectors(index_name, doc_id):
 index_name = "product_catalog"
 
 # Patch documents with dense vectors
-for i, document in enumerate(documents[:10]):
+for i, document in enumerate(tqdm(documents)):
     doc_id = document['index']
     patch_document_with_dense_vectors(index_name, doc_id)
 
