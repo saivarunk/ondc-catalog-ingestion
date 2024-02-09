@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex justify-center">
+    <form action="/search" method="post" class="flex">
+        <input type="text" name="query" placeholder="Enter your search query..." class="p-2 rounded-l border outline-none">
+        <button type="submit" class="bg-blue-500 text-white px-4 rounded-r">Search</button>
+    </form>
+</div>
+{% endblock %}

@@ -2,3 +2,5 @@ requests
 sentence-transformers
 elasticsearch==8.12.0
 tqdm
+fastapi
+uvicorn
