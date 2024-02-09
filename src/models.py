@@ -7,7 +7,7 @@ class Product(BaseModel):
     category: Optional[str]
     sub_category: Optional[str]
     brand: Optional[str]
-    sales_price: Optional[float]
+    sale_price: Optional[float]
     market_price: Optional[float]
     type: Optional[str]
     rating: Optional[float]
