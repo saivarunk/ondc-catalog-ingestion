@@ -20,12 +20,12 @@ dataset['brand'] = dataset['brand'].fillna("")
 documents = dataset.to_dict(orient="records")
 
 # Index documents
-index_name = "product_catalog"
+index_name = "product_catalog_indic"
 
 # Generate actions for bulk indexing
 actions = [
     {
-        "_index": "product_catalog",
+        "_index": index_name,
         "_id": document['index'],  # Document ID
         "_source": document
     }

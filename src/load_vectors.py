@@ -1,7 +1,9 @@
 from collections import defaultdict
 from meilisearch import Client
 from tqdm import tqdm
+
 import pandas as pd
+import concurrent.futures
 
 from elasticsearch import Elasticsearch, helpers
 from sentence_transformers import SentenceTransformer
@@ -19,10 +21,9 @@ dataset['description'] = dataset['description'].fillna("")
 dataset['brand'] = dataset['brand'].fillna("")
 
 documents = dataset.to_dict(orient="records")
-document_batches = [documents[i:i + 1000] for i in range(0, len(documents), 1000)]
 
 # Load the pre-trained model
-model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
+model = SentenceTransformer('l3cube-pune/indic-sentence-similarity-sbert')
 
 print("Model loaded")
 
@@ -50,11 +51,22 @@ def patch_document_with_dense_vectors(index_name, doc_id):
     client.update(index=index_name, id=doc_id, body={"doc": updated_doc})
 
 # Index name
-index_name = "product_catalog"
+index_name = "product_catalog_indic"
+failed = []
 
-# Patch documents with dense vectors
-for i, document in enumerate(tqdm(documents)):
-    doc_id = document['index']
-    patch_document_with_dense_vectors(index_name, doc_id)
+def process_document(doc):
+    try:
+        doc_id = doc['index']
+        patch_document_with_dense_vectors(index_name, doc_id)
+    except Exception as e:
+        print("Failed Id: ", doc['_id'])
+        failed.append(doc['_id'])
+        print(e)
+
+num_workers = 10
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+    # Map the processing function to documents using multiple threads
+    results = list(tqdm(executor.map(process_document, documents), total=len(documents)))
 
 print("Patch operation completed.")
