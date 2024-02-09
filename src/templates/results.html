@@ -1,21 +1,48 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="text-center">
+<div class="flex justify-center">
+    <div
+        class="flex w-full h-12 rounded-lg focus-within:shadow-lg bg-white overflow-hidden">
+        <div class="grid place-items-center h-full w-12 text-gray-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+        <form action="/search" method="post" class="flex text-left">
+            <input class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="query"
+                placeholder="Search products.." value="{{ query }}" />
+        </form>
+    </div>
+</div>
+<div class="text-center mt-10">
     <h1 class="text-2xl font-bold mb-6 text-left">Search Results for "{{ query }}"</h1>
     <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
         {% for hit in hits %}
             <div class="bg-white rounded-lg shadow-md p-4 text-left">
                 <h2 class="text-lg font-semibold">{{ hit._source.product }}</h2>
-                <p class="text-gray-500 mb-2">Category: {{ hit._source.category }}</p>
+                <p class="text-gray-500 mb-2">Category: </p>
+                    <span class="py-2.2 px-3.6 text-xs rounded-1.8 inline-block whitespace-nowrap text-center bg-slate-200 text-slate-650 align-baseline font-bold uppercase leading-none">
+                        {{ hit._source.category }}
+                    </span>
                 <p class="text-gray-700 mb-2">{{ hit._source.description }}</p>
                 <div class="flex justify-between">
                     <p class="text-gray-700">Brand: {{ hit._source.brand }}</p>
-                    <p class="text-blue-600">Price: ₹ {{ hit._source.sale_price }}</p>
+                    <div
+                    class="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-green-200 text-green-700 rounded-full"
+                >
+                ₹ {{ hit._source.sale_price }}
+                </div>
                 </div>
                 <div class="flex justify-between mt-10">
                     <p class="text-gray-700">Rating: {{ hit._source.rating }}</p>
-                    <p class="text-gray-700">Type: {{ hit._source.type }}</p>
+                    <div
+                        class="text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-blue-200 text-blue-700 rounded-full"
+                    >
+                        {{ hit._source.type }}
+                    </div>
                 </div>
             </div>
         {% endfor %}
