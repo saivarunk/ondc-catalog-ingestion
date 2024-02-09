@@ -4,3 +4,5 @@ elasticsearch==8.12.0
 tqdm
 fastapi
 uvicorn
+pydantic
+python-multipart

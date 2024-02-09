@@ -4,16 +4,17 @@ from fastapi.templating import Jinja2Templates
 from elasticsearch import Elasticsearch
 from sentence_transformers import SentenceTransformer
 
-from .elastic_client import ElasticsearchClient
+from elastic_client import ElasticsearchClient
 
 app = FastAPI()
-model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-es = Elasticsearch("https://localhost:9200", verify_certs=False, basic_auth=('elastic', 'pass@123'))
 
-client = ElasticsearchClient("product_catalog", es, model)
+model = SentenceTransformer('l3cube-pune/indic-sentence-similarity-sbert')
+es = Elasticsearch("https://es01:9200", verify_certs=False, basic_auth=('elastic', 'pass@123'))
+
+client = ElasticsearchClient("product_catalog_indic", es, model)
 
 # Templates setup
-templates = Jinja2Templates(directory="src/templates")
+templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -37,3 +38,9 @@ async def show_results(request: Request, query: str):
 async def show_results(request: Request, query: str):
     results = client.vector_search("product", query)
     return templates.TemplateResponse("results.html", {"request": request, "query": query, "hits": results})
+
+@app.post("/documents/index")
+async def index_documents(request: Request):
+    # Index documents
+    # For simplicity, we'll just return a redirect to the landing page
+    return RedirectResponse("/")

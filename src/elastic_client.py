@@ -1,7 +1,7 @@
 from typing import List
 
 from elasticsearch import helpers
-from .models import Product
+from models import Product
 
 
 class ElasticsearchClient:
