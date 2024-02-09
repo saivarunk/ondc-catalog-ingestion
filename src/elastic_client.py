@@ -53,8 +53,16 @@ class ElasticsearchClient:
                     if key in self.supported_keys and value:
                         dense_vectors = self.model.encode(value)
                         if len(dense_vectors) > 0:
-                            action[f"{key}_dense_vector"] = dense_vectors
+                            action["_source"][f"{key}_dense_vector"] = dense_vectors
             actions.append(action)
 
-        response = helpers.bulk(self.client, actions)
-        return response
+        try:
+            response = helpers.bulk(self.client, actions)
+            if response[0] == len(documents):
+                return {"message": "Ingestion completed."}
+            else:
+                raise Exception(
+                    f"Failed to ingest {len(documents) - response[0]} documents."
+                )
+        except Exception as e:
+            return {"error": e}
