@@ -9,7 +9,7 @@ from elasticsearch import Elasticsearch, helpers
 from sentence_transformers import SentenceTransformer
 
 # Set up Elasticsearch client
-client = Elasticsearch("https://localhost:9200", verify_certs=False, basic_auth=('elastic', 'pass@123'))
+client = Elasticsearch("https://es01:9200", verify_certs=False, basic_auth=('elastic', 'pass@123'))
 
 # Read the CSV file
 csv_file = "dataset/BigBasketProducts.csv"
@@ -63,7 +63,7 @@ def process_document(doc):
         failed.append(doc['_id'])
         print(e)
 
-num_workers = 10
+num_workers = 6
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
     # Map the processing function to documents using multiple threads

@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch, helpers
 import pandas as pd
 
 # Set up Elasticsearch client
-client = Elasticsearch("https://localhost:9200", verify_certs=False, basic_auth=('elastic', 'pass@123'))
+client = Elasticsearch("https://es01:9200", verify_certs=False, basic_auth=('elastic', 'pass@123'))
 
 # Read the CSV file
 csv_file = "dataset/BigBasketProducts.csv"
