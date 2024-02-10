@@ -15,11 +15,8 @@ help:  ## Show this help message
 		print "    " substr($$0, index($$0, "##") + 3) \
 	}' $(MAKEFILE_LIST) | column -t -s ':'
 
-setup: ## Start Docker Compose services
-	$(DOCKER_COMPOSE) up setup
-
 start: ## Start Docker Compose services
-	$(DOCKER_COMPOSE) up api_server kibana kafdrop kafka -d
+	$(DOCKER_COMPOSE) up -d
 
 stop: ## Stop Docker Compose services
 	$(DOCKER_COMPOSE) down
