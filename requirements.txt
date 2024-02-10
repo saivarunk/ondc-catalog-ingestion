@@ -9,3 +9,4 @@ python-multipart
 pandas
 kafka-python
 aiokafka==0.10.0
+pydantic-settings

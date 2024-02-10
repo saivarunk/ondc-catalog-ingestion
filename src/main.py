@@ -1,44 +1,42 @@
-from fastapi import FastAPI, Request, Form, Depends, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
-from elasticsearch import Elasticsearch
-from sentence_transformers import SentenceTransformer
+import asyncio
+import json
+
+from aiokafka import AIOKafkaConsumer
+from fastapi import FastAPI, Depends
 
 from elastic_client import ElasticsearchClient
-from models import BulkIngestPayload
+from models import Product
+from settings import settings
+from dependencies import get_es_client
+from router import router
 
-app = FastAPI()
+app = FastAPI(name=settings.app_name)
 
-model = SentenceTransformer('l3cube-pune/indic-sentence-similarity-sbert')
-es = Elasticsearch("https://es01:9200", verify_certs=False, basic_auth=('elastic', 'pass@123'))
+loop = asyncio.get_event_loop()
 
-client = ElasticsearchClient("product_catalog_indic", es, model)
-
-# Templates setup
-templates = Jinja2Templates(directory="templates")
-
-
-@app.get("/", response_class=HTMLResponse, include_in_schema=False)
-async def landing_page(request: Request):
-    return templates.TemplateResponse("landing.html", {"request": request})
+consumer = AIOKafkaConsumer(settings.kafka_topic, bootstrap_servers=settings.kafka_bootstrap_servers, loop=loop)
 
 
-@app.post("/search", response_class=RedirectResponse, include_in_schema=False)
-async def search(query: str = Form(...)):
-    return f"/results?query={query}"
+async def consume(client: ElasticsearchClient = Depends(get_es_client)):
+    await consumer.start()
+    try:
+        async for msg in consumer:
+            try:
+                document = Product(**json.loads(msg.value))
+                client.index_documents([document], True)
+            except Exception as e:
+                print(json.loads(msg.value))
+                print("Error processing document:", e)
 
+    finally:
+        await consumer.stop()
 
-@app.post("/results", response_class=HTMLResponse, include_in_schema=False)
-async def show_results(request: Request, query: str):
-    results = client.vector_search("product", query)
-    return templates.TemplateResponse("results.html", {"request": request, "query": query, "hits": results})
+@app.on_event("startup")
+async def startup_event():
+    loop.create_task(consume())
 
-@app.get("/results", response_class=HTMLResponse, include_in_schema=False)
-async def show_results(request: Request, query: str):
-    results = client.vector_search("product", query)
-    return templates.TemplateResponse("results.html", {"request": request, "query": query, "hits": results})
+@app.on_event("shutdown")
+async def shutdown_event():
+    await consumer.stop()
 
-@app.post("/documents/index")
-async def index_documents(payload: BulkIngestPayload):
-    response = client.index_documents(payload.records, payload.enable_vector_indexing)
-    return JSONResponse(content={"data": response})
+app.include_router(router)
