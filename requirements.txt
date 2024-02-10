@@ -10,3 +10,4 @@ pandas
 kafka-python
 aiokafka==0.10.0
 pydantic-settings
+locust==2.22.0

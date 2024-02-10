@@ -78,3 +78,15 @@ make load_async
 - The speed of ingestion varies based on the ML model being used for vectorization of the product attributes.
 - The ingestion also depends on the infrastructure being used for vectorization. In our application, we have used CPU based infrastructure for ease of demo. GPU based infra can accelerate the vector based ingestion speed.
 - In this application, we are using ```l3cube-pune/indic-sentence-similarity-sbert model``` from [Huggingface](https://huggingface.co/l3cube-pune/indic-sentence-similarity-sbert).
+
+### Load Testing
+
+We have prepared locust based script to perform loadtest on the data ingestion endpoint. It can be run with the below command:
+
+```
+locust -f src/tests/load_test.py --host http://localhost:80
+```
+
+Note: The repo has Elasticsearch and Kafka in single node setup which can be used for demonstration purposes. To perform a test with large scale ingestion requests or search requests, Elastic and Kafka needs to be configured in a high availability mode with multiple nodes to ensure maximum performance. Based on the configuration od these two systems, the load test results can vary.
+
+![locust_results](docs/load_test_10_users.png)
