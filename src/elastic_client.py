@@ -22,7 +22,6 @@ class ElasticsearchClient:
 
     def vector_search(self, field, question):
         query_vector_product = self.model.encode(question)
-        print(query_vector_product)
         script_query = {
             "script_score": {
                 "min_score": 1.3,
@@ -66,3 +65,18 @@ class ElasticsearchClient:
                 )
         except Exception as e:
             return {"error": e}
+        
+    def get_document_count(self):
+        doc_query = {
+            "query": {
+                    "bool": {"must": [{"exists": {"field": "product"}}]}
+            }
+        }
+        vector_query = {
+            "query": {
+                    "bool": {"must": [{"exists": {"field": "product_dense_vector"}}]}
+            }
+        }
+        doc_res = self.client.count(index=self.index_name, body=doc_query)
+        vector_res = self.client.count(index=self.index_name, body=vector_query)
+        return doc_res["count"], vector_res["count"]

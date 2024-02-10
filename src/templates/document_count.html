@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex justify-center h-200">
+    <div class="max-w-md mx-auto mt-10 bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="px-4 py-2 bg-blue-500 text-white">
+            <h1 class="text-xl font-semibold">Index Status</h1>
+        </div>
+        <div class="p-4">
+            <table class="table-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Category</th>
+                        <th class="px-4 py-2">Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="border px-4 py-2">Products indexed</td>
+                        <td class="border px-4 py-2">{{ document_count }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2">Products indexed with vectors</td>
+                        <td class="border px-4 py-2">{{ vector_count }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
