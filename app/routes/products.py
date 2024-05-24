@@ -4,7 +4,7 @@ from starlette.responses import JSONResponse
 from app.dependencies import get_es_client
 from app.core.models import BulkIngestPayload
 
-router = APIRouter(prefix="/catlogs", tags=["products"])
+router = APIRouter(prefix="/catalogs", tags=["products"])
 
 
 @router.post("/{catalog_id}/products")

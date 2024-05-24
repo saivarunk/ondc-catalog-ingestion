@@ -16,12 +16,12 @@ dataset['rating'] = dataset['rating'].fillna(0)
 dataset['description'] = dataset['description'].fillna("")
 dataset['brand'] = dataset['brand'].fillna("")
 
-documents = dataset.to_dict(orient="records")
+documents = dataset.to_dict(orient="records")[:100]
 batch_size = 100
 
 for i in tqdm(range(0, len(documents), batch_size)):
     batch = documents[i:i + batch_size]
-    response = requests.post(f"{backend_host}/documents/index", json={
+    response = requests.post(f"{backend_host}/api/v1/catalogs/6650f8d8619b12f3c2691650/products", json={
         "records": batch,
         "enable_vector_indexing": True
     })
