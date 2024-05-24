@@ -28,6 +28,7 @@ class CatalogInDB(CatalogBase):
 
 class Product(BaseModel):
     index: int
+    catalog_id: Optional[str] = ""
     product: Optional[str]
     category: Optional[str]
     sub_category: Optional[str]

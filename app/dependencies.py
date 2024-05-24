@@ -9,7 +9,7 @@ model = SentenceTransformer('l3cube-pune/indic-sentence-similarity-sbert')
 es = Elasticsearch(settings.es_host, verify_certs=False,
                    basic_auth=(settings.elastic_username, settings.elastic_password))
 
-client = ElasticsearchClient("product_catalog_indic", es, model)
+client = ElasticsearchClient(settings.es_index, es, model)
 
 mongo_client = MongoClient(
     host=settings.mongo_host,

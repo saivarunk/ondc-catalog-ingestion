@@ -24,7 +24,7 @@ class ElasticsearchClient:
         self.client = client
         self.model = model
 
-    def vector_search(self, field, question):
+    def vector_search(self, catalog_id, field, question):
         query_vector_product = self.model.encode(question)
         script_query = {
             "script_score": {
@@ -43,9 +43,10 @@ class ElasticsearchClient:
         )
         return response["hits"]["hits"]
 
-    def index_documents(self, documents: List[Product], enable_vector_indexing=False):
+    def index_documents(self, catalog_id: str, documents: List[Product], enable_vector_indexing=False):
         actions = []
         for document in documents:
+            document.catalog_id = catalog_id
             action = {
                 "_index": self.index_name,
                 "_id": document.index,
