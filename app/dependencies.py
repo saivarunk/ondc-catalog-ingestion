@@ -11,19 +11,14 @@ es = Elasticsearch(settings.es_host, verify_certs=False,
 
 client = ElasticsearchClient("product_catalog_indic", es, model)
 
+mongo_client = MongoClient(
+    host=settings.mongo_host,
+    port=settings.mongo_port,
+    username=settings.mongo_user,
+    password=settings.mongo_password,
+)
+mongo_db = mongo_client[settings.mongo_db]
+
 
 async def get_es_client():
     yield client
-
-
-def get_mongo_client():
-    client = MongoClient(
-        host=settings.mongo_host,
-        port=settings.mongo_port,
-        username=settings.mongo_user,
-        password=settings.mongo_password,
-    )
-    try:
-        yield client
-    finally:
-        client.close()

@@ -1,5 +1,29 @@
 from pydantic import BaseModel
 from typing import Optional, List
+from typing import Optional
+from bson import ObjectId
+
+
+class CatalogBase(BaseModel):
+    name: str
+
+
+class CatalogCreate(CatalogBase):
+    pass
+
+
+class CatalogUpdate(CatalogBase):
+    pass
+
+
+class CatalogInDB(CatalogBase):
+    id: str
+
+    class Config:
+        orm_mode = True
+        json_encoders = {
+            ObjectId: str
+        }
 
 
 class Product(BaseModel):
