@@ -1,9 +1,9 @@
+uvicorn
 requests
 sentence-transformers
 elasticsearch==8.12.0
 tqdm
 fastapi
-uvicorn
 pydantic
 python-multipart
 pandas
@@ -11,3 +11,4 @@ kafka-python
 aiokafka==0.10.0
 pydantic-settings
 locust==2.22.0
+pymongo==4.7.2

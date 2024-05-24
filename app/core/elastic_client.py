@@ -1,18 +1,22 @@
 from typing import List
 
 from elasticsearch import helpers
-from models import Product
+
+from app.core.models import Product
 
 
 class ElasticsearchClient:
 
     supported_keys = [
         "product",
+        "description",
+    ]
+    
+    keyword_keys = [
         "category",
         "sub_category",
         "brand",
-        "description",
-        "type",
+        "type"
     ]
 
     def __init__(self, index_name, client, model) -> None:

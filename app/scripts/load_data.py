@@ -8,7 +8,7 @@ import pandas as pd
 backend_host = "http://localhost"
 
 # Read the CSV file
-csv_file = "src/dataset/BigBasketProducts.csv"
+csv_file = "app/dataset/BigBasketProducts.csv"
 dataset = pd.read_csv(csv_file)
 
 dataset['product'] = dataset['product'].fillna("")
@@ -23,7 +23,7 @@ for i in tqdm(range(0, len(documents), batch_size)):
     batch = documents[i:i + batch_size]
     response = requests.post(f"{backend_host}/documents/index", json={
         "records": batch,
-        "enable_vector_indexing": False
+        "enable_vector_indexing": True
     })
     response.raise_for_status()
 

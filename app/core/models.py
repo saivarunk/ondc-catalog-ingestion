@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, List
 
+
 class Product(BaseModel):
     index: int
     product: Optional[str]

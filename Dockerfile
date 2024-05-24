@@ -1,22 +1,38 @@
-# Use the official Python image from the Docker Hub
-FROM python:3.9-slim
+FROM python:3.9-slim-buster as builder
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the requirements file into the container
-COPY requirements.txt /app/requirements.txt
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# Install dependencies using pip
-RUN pip install --no-cache-dir -r requirements.txt
+COPY ./requirements.txt /code/requirements.txt
 
-# Copy the entire src directory into the container
-COPY src /app
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y build-essential gcc && \
+    rm -rf /var/lib/apt/lists/*
 
-# Expose port 8000 for the FastAPI application
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir --user -r requirements.txt
+
+FROM python:3.9-slim-buster as runtime
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Copy Python dependencies from the builder stage
+COPY --from=builder /root/.local /root/.local
+
+# Add the local bin folder to PATH
+ENV PATH=/root/.local/bin:$PATH
+
+COPY . .
+
+RUN python app/load_model.py
+
 EXPOSE 8000
 
-RUN python3 load_model.py
-
-# Command to run the FastAPI application using uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--timeout-keep-alive", "600"]
