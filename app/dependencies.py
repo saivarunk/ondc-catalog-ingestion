@@ -1,11 +1,19 @@
+import requests
+
 from pymongo import MongoClient
 from elasticsearch import Elasticsearch
-from sentence_transformers import SentenceTransformer
 
 from app.settings import settings
 from app.core.elastic_client import ElasticsearchClient
 
-model = SentenceTransformer('l3cube-pune/indic-sentence-similarity-sbert')
+
+class Model:
+    def encode(self, text):
+        return requests.post("http://vector_service:5000/vectorize", json={"text": text}).json()
+
+
+model = Model()
+
 es = Elasticsearch(settings.es_host, verify_certs=False,
                    basic_auth=(settings.elastic_username, settings.elastic_password))
 

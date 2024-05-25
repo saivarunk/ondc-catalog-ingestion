@@ -13,7 +13,8 @@ RUN apt-get update && \
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --upgrade pip && \
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --user torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir --user -r requirements.txt
 
 FROM python:3.9-slim-buster as runtime
@@ -30,8 +31,6 @@ COPY --from=builder /root/.local /root/.local
 ENV PATH=/root/.local/bin:$PATH
 
 COPY . .
-
-RUN python app/load_model.py
 
 EXPOSE 8000
 
