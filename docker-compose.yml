@@ -43,6 +43,19 @@ services:
       - .:/app
     env_file:
       - .env
+  flower:
+    image: mher/flower:0.9.7
+    container_name: flower
+    command: ['flower', '--broker=redis://redis:6379', '--port=5555']
+    depends_on:
+      - redis
+      - mongodb
+    ports:
+      - "5555:5555"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
   redis:
     image: "redis:6.0-alpine"
     container_name: redis
