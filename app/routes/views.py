@@ -8,7 +8,8 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
 from app.core.models import CatalogCreate, Product
-from app.core.respository import get_catalogs, create_catalog, get_catalog
+from app.core.respository import get_catalogs, create_catalog, get_catalog, create_product_bulk
+from app.celery import tasks
 
 from app.dependencies import get_es_client, mongo_db
 
@@ -64,7 +65,10 @@ async def post_index_catalog(request: Request, catalog_id: str, file: UploadFile
     products = [Product(**doc) for doc in documents]
 
     response = es_client.index_documents(catalog_id, products, False)
-    if response['message'] == "Ingestion completed.":
+    mongo_response = create_product_bulk(mongo_db, catalog_id, products)
+
+    if response['message'] == "Ingestion completed." and len(mongo_response['writeErrors']) == 0:
+        tasks.process_catalog_ingestion.apply_async((catalog_id, ))
         return RedirectResponse(url=f"/", status_code=303)
     else:
         return HTMLResponse(content=response['message'], status_code=500)

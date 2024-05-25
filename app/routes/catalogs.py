@@ -1,11 +1,8 @@
-from fastapi import Depends, HTTPException, APIRouter
-from pymongo import MongoClient
-from pymongo.database import Database
+from fastapi import HTTPException, APIRouter
 
 from app.core.models import CatalogCreate, CatalogUpdate, CatalogInDB
 from app.core.respository import create_catalog, get_catalogs, get_catalog, update_catalog, delete_catalog
 from app.dependencies import mongo_db
-from app.settings import settings
 
 router = APIRouter(prefix="/catalogs", tags=["catalogs"])
 

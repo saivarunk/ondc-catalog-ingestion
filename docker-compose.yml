@@ -18,9 +18,26 @@ services:
       - "80:8000"
     depends_on:
       - mongodb
+      - celery
     volumes:
       - .:/app
     command: uvicorn app.main:app --reload --port 8000 --host 0.0.0.0
+  celery:
+    build: .
+    container_name: celery_worker
+    command: [ "celery", "-A", "app.celery:celery_app", "worker", "--loglevel=info" ]
+    depends_on:
+      - redis
+      - mongodb
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+  redis:
+    image: "redis:6.0-alpine"
+    container_name: redis
+    ports:
+      - "6379:6379"
  
 volumes:
   mongo-data:

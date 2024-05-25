@@ -1,10 +1,17 @@
+from typing import List
+
 from bson.objectid import ObjectId
+from pymongo import UpdateOne
 from pymongo.database import Database
-from app.core.models import CatalogCreate, CatalogUpdate
+from app.core.models import CatalogCreate, CatalogUpdate, Product
 
 
 def get_catalog_collection(db: Database):
     return db["catalogs"]
+
+
+def get_product_collection(db: Database):
+    return db["products"]
 
 
 def create_catalog(db: Database, catalog: CatalogCreate):
@@ -12,6 +19,24 @@ def create_catalog(db: Database, catalog: CatalogCreate):
     catalog_dict = catalog.dict()
     result = catalog_collection.insert_one(catalog_dict)
     return str(result.inserted_id)
+
+
+def create_product_bulk(db: Database, catalog_id: str, products: List[Product]):
+    product_collection = get_product_collection(db)
+    operations = []
+    for product in products:
+        product_dict = product.dict()
+        product_dict["catalog_id"] = catalog_id
+        product_dict["vector_indexed"] = False
+        operations.append(
+            UpdateOne(
+                {"catalog_id": catalog_id, "index": product.index},
+                {"$set": product_dict},
+                upsert=True,
+            )
+        )
+    result = product_collection.bulk_write(operations)
+    return result.bulk_api_result
 
 
 def get_catalogs(db: Database):

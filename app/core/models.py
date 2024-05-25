@@ -40,6 +40,16 @@ class Product(BaseModel):
     description: Optional[str]
 
 
+class ProductInDB(Product):
+    id: str
+
+    class Config:
+        orm_mode = True
+        json_encoders = {
+            ObjectId: str
+        }
+
+
 class BulkIngestPayload(BaseModel):
     enable_vector_indexing: bool
     records: List[Product]
