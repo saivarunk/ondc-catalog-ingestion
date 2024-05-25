@@ -22,6 +22,11 @@
                             Indexed for Semantic Search: {{ catalog['doc_count'][1] }}
                         </span>
                     </div>
+                <div class="flex justify-end mt-5">
+                    <a href="/index-catalog/{{ catalog['_id'] }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Index Products
+                    </a>
+                </div>
                 </div>
                 {% endfor %}
             </div>
