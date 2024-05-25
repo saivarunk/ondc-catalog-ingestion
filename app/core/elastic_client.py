@@ -27,22 +27,42 @@ class ElasticsearchClient:
     def vector_search(self, catalog_id, field, question):
         query_vector_product = self.model.encode(question)
         script_query = {
-            "script_score": {
-                "min_score": 1.3,
-                "query": {
-                    "bool": {
-                        "must": [
-                            {"exists": {"field": "product_dense_vector"}}
-                        ],
-                        "filter": [
-                            {"term": {"catalog_id": catalog_id}}
-                        ]
+            "bool": {
+                "should": [
+                    {
+                        "script_score": {
+                            "min_score": 1.3,
+                            "query": {
+                                "bool": {
+                                    "must": [
+                                        {"exists": {"field": "product_dense_vector"}}
+                                    ],
+                                    "filter": [
+                                        {"term": {"catalog_id": catalog_id}}
+                                    ]
+                                }
+                            },
+                            "script": {
+                                "source": f"cosineSimilarity(params.query_vector, '{field}_dense_vector') + 1.0",
+                                "params": {"query_vector": query_vector_product.tolist()},
+                            },
+                        }
+                    },
+                    {
+                        "bool": {
+                            "must": [
+                                {"term": {"catalog_id": catalog_id}},
+                                {
+                                    "multi_match": {
+                                        "query": question,
+                                        "fields": ["product", "description"]
+                                    }
+                                }
+                            ]
+                        }
                     }
-                },
-                "script": {
-                    "source": f"cosineSimilarity(params.query_vector, '{field}_dense_vector') + 1.0",
-                    "params": {"query_vector": query_vector_product.tolist()},
-                },
+                ],
+                "minimum_should_match": 1
             }
         }
         response = self.client.search(
