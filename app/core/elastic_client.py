@@ -30,7 +30,14 @@ class ElasticsearchClient:
             "script_score": {
                 "min_score": 1.3,
                 "query": {
-                    "bool": {"must": [{"exists": {"field": "product_dense_vector"}}]}
+                    "bool": {
+                        "must": [
+                            {"exists": {"field": "product_dense_vector"}}
+                        ],
+                        "filter": [
+                            {"term": {"catalog_id": catalog_id}}
+                        ]
+                    }
                 },
                 "script": {
                     "source": f"cosineSimilarity(params.query_vector, '{field}_dense_vector') + 1.0",
