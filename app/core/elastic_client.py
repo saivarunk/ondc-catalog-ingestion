@@ -44,7 +44,7 @@ class ElasticsearchClient:
                             },
                             "script": {
                                 "source": f"cosineSimilarity(params.query_vector, '{field}_dense_vector') + 1.0",
-                                "params": {"query_vector": query_vector_product.tolist()},
+                                "params": {"query_vector": query_vector_product},
                             },
                         }
                     },
