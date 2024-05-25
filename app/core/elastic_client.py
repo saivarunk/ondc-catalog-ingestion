@@ -76,7 +76,7 @@ class ElasticsearchClient:
             document.catalog_id = catalog_id
             action = {
                 "_index": self.index_name,
-                "_id": document.index,
+                "_id": f"{catalog_id}_{document.index}",
                 "_source": document.dict(),
             }
             if enable_vector_indexing:

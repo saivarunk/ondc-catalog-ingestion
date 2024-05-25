@@ -12,14 +12,13 @@ def process_catalog_ingestion(catalog_id: str):
     db_products = get_products_by_catalog(mongo_db, catalog_id)
     products_to_index = [Product(**doc) for doc in db_products]
 
-    response = es_client.index_documents(catalog_id, products_to_index, True)
-    if response['message'] == "Ingestion completed.":
-        print(f"Catalog ingestion completed for catalog_id: {catalog_id}")
-        for product in db_products:
-            product["vector_indexed"] = True
-        mongo_db.products.bulk_write(
-            [UpdateOne({"_id": product["_id"]}, {"$set": product}) for product in db_products]
-        )
-    else:
-        print(f"Catalog ingestion failed for catalog_id: {catalog_id}")
-        raise Exception(f"Catalog ingestion failed for catalog_id: {catalog_id}")
+    batch_size = 100
+    for i in range(0, len(products_to_index), batch_size):
+        batch = products_to_index[i:i + batch_size]
+        response = es_client.index_documents(catalog_id, batch, True)
+        if response['message'] == "Ingestion completed.":
+            print(f"Catalog ingestion completed for catalog_id: {catalog_id}")
+
+        else:
+            print(f"Catalog ingestion failed for catalog_id: {catalog_id}")
+            raise Exception(f"Catalog ingestion failed for catalog_id: {catalog_id}")
