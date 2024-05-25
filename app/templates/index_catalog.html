@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex justify-center h-screen">
+    <div class="w-full max-w-6xl p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Index Products into Catalog</h1>
+        </div>
+        <form action="/index-catalog/{{ catalog_id }}" method="post" enctype="multipart/form-data" class="grid grid-cols-1 gap-4">
+            <div>
+                <label for="file" class="block text-sm font-medium text-gray-700">Upload CSV File</label>
+                <input type="file" name="file" id="file" accept=".csv" class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Upload and Index</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

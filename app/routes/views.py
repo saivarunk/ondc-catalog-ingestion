@@ -1,10 +1,14 @@
-from fastapi import APIRouter, Request, Response, Depends, Form
+import io
+
+import pandas as pd
+
+from fastapi import APIRouter, Request, Response, Depends, Form, UploadFile, File
 from starlette import status
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
-from app.core.models import CatalogCreate
-from app.core.respository import get_catalogs, create_catalog
+from app.core.models import CatalogCreate, Product
+from app.core.respository import get_catalogs, create_catalog, get_catalog
 
 from app.dependencies import get_es_client, mongo_db
 
@@ -19,7 +23,6 @@ async def landing_page(request: Request, client=Depends(get_es_client)):
     for catalog in catalogs:
         doc_count = client.get_document_count(str(catalog["_id"]))
         catalog['doc_count'] = doc_count
-        print(catalog)
 
     return templates.TemplateResponse("landing.html", {"request": request, "catalogs": catalogs})
 
@@ -34,6 +37,37 @@ async def post_add_catalog(request: Request, name: str = Form(...)):
     payload = CatalogCreate(name=name)
     catalog_id = create_catalog(mongo_db, payload)
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.get("/index-catalog/{catalog_id}", response_class=HTMLResponse)
+async def get_index_catalog(request: Request, catalog_id: str):
+    return templates.TemplateResponse("index_catalog.html", {"request": request, "catalog_id": catalog_id})
+
+
+@router.post("/index-catalog/{catalog_id}")
+async def post_index_catalog(request: Request, catalog_id: str, file: UploadFile = File(...),
+                             es_client=Depends(get_es_client)):
+    catalog = get_catalog(mongo_db, catalog_id)
+
+    if catalog is None:
+        return HTMLResponse(content="Catalog not found", status_code=404)
+
+    contents = await file.read()
+
+    dataset = pd.read_csv(io.StringIO(contents.decode("utf-8")))
+    dataset['product'] = dataset['product'].fillna("")
+    dataset['rating'] = dataset['rating'].fillna(0)
+    dataset['description'] = dataset['description'].fillna("")
+    dataset['brand'] = dataset['brand'].fillna("")
+
+    documents = dataset.to_dict(orient="records")
+    products = [Product(**doc) for doc in documents]
+
+    response = es_client.index_documents(catalog_id, products, False)
+    if response['message'] == "Ingestion completed.":
+        return RedirectResponse(url=f"/", status_code=303)
+    else:
+        return HTMLResponse(content=response['message'], status_code=500)
 
 
 @router.get("/products", response_class=HTMLResponse, include_in_schema=False)
