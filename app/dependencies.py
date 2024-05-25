@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer
 from app.settings import settings
 from app.core.elastic_client import ElasticsearchClient
 
-model = SentenceTransformer('l3cube-pune/indic-sentence-similarity-sbert')
+model = SentenceTransformer('Snowflake/snowflake-arctic-embed-m')
 es = Elasticsearch(settings.es_host, verify_certs=False,
                    basic_auth=(settings.elastic_username, settings.elastic_password))
 

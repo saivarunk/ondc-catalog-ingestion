@@ -1,3 +1,3 @@
 from sentence_transformers import SentenceTransformer
 
-model = SentenceTransformer('l3cube-pune/indic-sentence-similarity-sbert')
+model = SentenceTransformer("Snowflake/snowflake-arctic-embed-m")

@@ -16,7 +16,7 @@
                 <select name="catalog_id" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2">
                     <option value="" disabled>Select Catalog</option>
                     {% for catalog in catalogs %}
-                        <option value="{{ catalog['_id'] }}" {% if catalog['_id'] == selected_catalog_id %}selected{% endif %}>{{ catalog['name'] }}</option>
+                        <option value="{{ catalog['_id'] }}" {% if catalog['_id']|string == catalog_id %}selected{% endif %}>{{ catalog['name'] }}</option>
                     {% endfor %}
                 </select>
             </div>
