@@ -3,13 +3,13 @@ from pymongo import UpdateOne
 from app.celery import celery_app
 from app.core.models import Product
 from app.dependencies import mongo_db, client as es_client
-from app.core.respository import get_products_by_catalog
+from app.core.respository import get_product_by_ids
 
 
 @celery_app.task
-def process_catalog_ingestion(catalog_id: str):
+def process_catalog_ingestion(catalog_id: str, product_ids):
     print(f"Processing catalog ingestion for catalog_id: {catalog_id}")
-    db_products = get_products_by_catalog(mongo_db, catalog_id)
+    db_products = get_product_by_ids(mongo_db, catalog_id, product_ids)
     products_to_index = [Product(**doc) for doc in db_products]
 
     batch_size = 100

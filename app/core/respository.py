@@ -36,12 +36,21 @@ def create_product_bulk(db: Database, catalog_id: str, products: List[Product]):
             )
         )
     result = product_collection.bulk_write(operations)
+    print("result", result)
     return result.bulk_api_result
 
 
 def get_products_by_catalog(db: Database, catalog_id: str):
     product_collection = get_product_collection(db)
     products = list(product_collection.find({"catalog_id": catalog_id}))
+    return products
+
+
+def get_product_by_ids(db: Database, catalog_id: str, product_ids: List[str]):
+    product_collection = get_product_collection(db)
+    products = list(
+        product_collection.find({"catalog_id": catalog_id, "index": {"$in": product_ids}})
+    )
     return products
 
 

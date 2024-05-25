@@ -13,8 +13,9 @@ router = APIRouter(prefix="/catalogs", tags=["products"])
 async def index_documents(catalog_id: str, payload: BulkIngestPayload, client=Depends(get_es_client)):
     response = client.index_documents(catalog_id, payload.records, payload.enable_vector_indexing)
     mongo_response = create_product_bulk(mongo_db, catalog_id, payload.records)
+    product_ids = [doc.index for doc in payload.records]
     if response['message'] == "Ingestion completed." and len(mongo_response['writeErrors']) == 0:
-        tasks.process_catalog_ingestion.apply_async((catalog_id, ))
+        tasks.process_catalog_ingestion.apply_async((catalog_id, product_ids))
         return JSONResponse(content={"data": response})
     else:
         return JSONResponse(content={"data": response}, status_code=400)

@@ -66,9 +66,10 @@ async def post_index_catalog(request: Request, catalog_id: str, file: UploadFile
 
     response = es_client.index_documents(catalog_id, products, False)
     mongo_response = create_product_bulk(mongo_db, catalog_id, products)
+    product_ids = [doc.index for doc in products]
 
     if response['message'] == "Ingestion completed." and len(mongo_response['writeErrors']) == 0:
-        tasks.process_catalog_ingestion.apply_async((catalog_id, ))
+        tasks.process_catalog_ingestion.apply_async((catalog_id, product_ids))
         return RedirectResponse(url=f"/", status_code=303)
     else:
         return HTMLResponse(content=response['message'], status_code=500)
