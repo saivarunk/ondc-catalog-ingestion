@@ -1,5 +1,6 @@
 import asyncio
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.utils import get_openapi
 
 from app.routes.views import router as views_router
@@ -13,6 +14,7 @@ app.include_router(views_router)
 app.include_router(catalog_router, prefix="/api/v1")
 app.include_router(product_router, prefix="/api/v1")
 
+app.mount("/static", StaticFiles(directory="app/templates/images"), name="static")
 
 def custom_openapi():
     if app.openapi_schema:
