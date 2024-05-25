@@ -78,15 +78,29 @@ class ElasticsearchClient:
         except Exception as e:
             return {"error": e}
         
-    def get_document_count(self):
+    def get_document_count(self, catalog_id):
         doc_query = {
             "query": {
-                    "bool": {"must": [{"exists": {"field": "product"}}]}
+                    "bool": {
+                        "must": [
+                            {"exists": {"field": "product"}}
+                        ],
+                        "filter": [
+                            {"term": {"catalog_id": catalog_id}}
+                        ]
+                    }
             }
         }
         vector_query = {
             "query": {
-                    "bool": {"must": [{"exists": {"field": "product_dense_vector"}}]}
+                    "bool": {
+                        "must": [
+                            {"exists": {"field": "product_dense_vector"}}
+                        ],
+                        "filter": [
+                            {"term": {"catalog_id": catalog_id}}
+                        ]
+                    }
             }
         }
         doc_res = self.client.count(index=self.index_name, body=doc_query)
