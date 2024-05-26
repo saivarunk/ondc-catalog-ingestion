@@ -13,7 +13,7 @@
         </div>
         <form action="/products/search" method="post" class="form-container">
             <div class="select-box">
-                <select name="catalog_id" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2">
+                <select name="catalog_id" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" required>
                     <option value="" disabled>Select Catalog</option>
                     {% for catalog in catalogs %}
                         <option value="{{ catalog['_id'] }}" {% if catalog['_id']|string == catalog_id %}selected{% endif %}>{{ catalog['name'] }}</option>
@@ -21,7 +21,7 @@
                 </select>
             </div>
             <div class="search-box">
-                <input class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="query" value="{{ query }}" placeholder="Search products.." />
+                <input required class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="query" value="{{ query }}" placeholder="Search products.." />
             </div>
         </form>
     </div>
