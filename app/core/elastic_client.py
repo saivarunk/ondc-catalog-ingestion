@@ -42,7 +42,7 @@ class ElasticsearchClient:
                     {
                         "multi_match": {
                             "query": question,
-                            "fields": ["product", "description"]
+                            "fields": ["product", "product_hi", "product_te", "product_gu", "product_ka", "product_bn", "product_mr"]
                         }
                     }
                 ]
@@ -81,6 +81,7 @@ class ElasticsearchClient:
                 translation = translation_collection.find_one({"key": document.product})
                 if translation:
                     action["_source"]["product_hi"] = translation.get("hi", "")
+                    action["_source"]["product_ka"] = translation.get("ka", "")
                 # for key, value in document.dict().items():
                 #     if key in self.supported_keys and value:
                 #         dense_vectors = self.model.encode(value)
