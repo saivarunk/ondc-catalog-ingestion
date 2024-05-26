@@ -1,3 +1,6 @@
+from typing import Optional
+
+from pydantic import BaseModel
 from fastapi import APIRouter, Depends
 from starlette.responses import JSONResponse
 
@@ -19,3 +22,19 @@ async def index_documents(catalog_id: str, payload: BulkIngestPayload, client=De
         return JSONResponse(content={"data": response})
     else:
         return JSONResponse(content={"data": response}, status_code=400)
+
+
+class ProductSearchRequest(BaseModel):
+    query: str
+    category: Optional[str] = None
+    brand: Optional[str] = None
+
+
+@router.post("/{catalog_id}/products/search", description="Search products in a catalog")
+async def product_search(catalog_id: str, request: ProductSearchRequest, client=Depends(get_es_client)):
+    filters = {
+        "category": request.category,
+        "brand": request.brand
+    }
+    results = client.vector_search(catalog_id, "product", request.query, filters)
+    return JSONResponse(content={"data": results})
