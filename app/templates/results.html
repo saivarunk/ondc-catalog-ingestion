@@ -21,13 +21,13 @@
                 </select>
             </div>
             <div class="search-box">
-                <input required class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="query" placeholder="Search products.." />
+                <input required class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="query" placeholder="Search products.." value="{{ query }}"/>
             </div>
             <div class="search-box">
-                <input class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="category" placeholder="Select category" />
+                <input class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="category" placeholder="Select category" value="{{ category }}" />
             </div>
             <div class="search-box">
-                <input class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="brand" placeholder="Select brand" />
+                <input class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="brand" placeholder="Select brand" value="{{ brand }}" />
             </div>
             <button type="submit">Search</button>
         </form>

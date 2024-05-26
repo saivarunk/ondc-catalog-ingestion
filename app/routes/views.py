@@ -107,7 +107,8 @@ async def show_results(request: Request, catalog_id: str, query: str, category: 
                                                        "hits": results,
                                                        "catalogs": catalogs,
                                                        "catalog_id": catalog_id,
-                                                       "category": category
+                                                       "category": category,
+                                                       "brand": brand
                                                        })
 
 
@@ -122,7 +123,8 @@ async def show_results(request: Request, catalog_id: str, query: str, category: 
     return templates.TemplateResponse("results.html", {"request": request, "query": query, "hits": results,
                                                        "catalogs": catalogs,
                                                        "catalog_id": catalog_id,
-                                                       "category": category
+                                                       "category": category,
+                                                       "brand": brand
                                                        })
 
 
