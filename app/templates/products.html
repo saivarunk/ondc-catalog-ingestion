@@ -1,36 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex justify-center h-screen">
-    <div
-        class="flex justify-center items-center w-full h-12 rounded-lg focus-within:shadow-lg bg-white overflow-hidden">
-        <div class="grid place-items-center h-full w-12 text-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-        </div>
-        <form action="/products/search" method="post" class="form-container">
-            <div class="select-box">
-                <select name="catalog_id" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" required>
+<div class="flex w-full">
+    <form action="/products/search" method="post" class="p-4 bg-white shadow-md rounded-md w-full">
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-4 w-full">
+            <div class="w-full">
+                <label for="catalog_id" class="block text-sm font-medium text-gray-700 mb-1">Select Catalog</label>
+                <select name="catalog_id" id="catalog_id" class="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="" disabled selected>Select Catalog</option>
                     {% for catalog in catalogs %}
                         <option value="{{ catalog['_id'] }}">{{ catalog['name'] }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="search-box">
-                <input required class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="query" placeholder="Search products.." />
+            <div class="w-full">
+                <label for="query" class="block text-sm font-medium text-gray-700 mb-1">Search products</label>
+                <input type="text" name="query" id="query" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Search products.." required />
             </div>
-            <div class="search-box">
-                <input class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="category" placeholder="Select Category" />
+            <div class="w-full">
+                <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <input type="text" name="category" id="category" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Select category"/>
             </div>
-            <div class="search-box">
-                <input class="peer h-full w-full outline-none text-sm text-gray-700 pr-2" type="text" name="brand" placeholder="Select brand" />
+            <div class="w-full">
+                <label for="brand" class="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                <input type="text" name="brand" id="brand" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Select brand"/>
             </div>
-            <button type="submit">Search</button>
-        </form>
-    </div>
+            <div class="w-full mt-6">
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Search
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 {% endblock %}
