@@ -51,7 +51,7 @@ class ElasticsearchClient:
         if filters:
             filter_clause = [
                 {
-                    "term": {
+                    "match": {
                         k: v
                     }
                 }
