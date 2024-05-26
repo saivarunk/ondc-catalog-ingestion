@@ -83,21 +83,23 @@ async def paroduct_landing_page(request: Request):
 
 
 @router.post("/products/search", response_class=RedirectResponse, include_in_schema=False)
-async def product_search(query: str = Form(...), catalog_id: str = Form(...), category: str = Form("")):
+async def product_search(query: str = Form(...), catalog_id: str = Form(...), category: str = Form(""), brand: str = Form("")):
     params = {
         "catalog_id": catalog_id,
         "query": query,
-        "category": category
+        "category": category,
+        "brand": brand
     }
     encoded = urllib.parse.urlencode(params)
     return f"/products/results?{encoded}"
 
 
 @router.post("/products/results", response_class=HTMLResponse, include_in_schema=False)
-async def show_results(request: Request, catalog_id: str, query: str, category: str, client=Depends(get_es_client)):
+async def show_results(request: Request, catalog_id: str, query: str, category: str, brand: str, client=Depends(get_es_client)):
     catalogs = get_catalogs(mongo_db)
     filters = {
-        "category": category
+        "category": category,
+        "brand": brand
     }
     results = client.vector_search(catalog_id, "product", query, filters)
     return templates.TemplateResponse("results.html", {"request": request,
@@ -110,10 +112,11 @@ async def show_results(request: Request, catalog_id: str, query: str, category: 
 
 
 @router.get("/products/results", response_class=HTMLResponse, include_in_schema=False)
-async def show_results(request: Request, catalog_id: str, query: str, category: str, client=Depends(get_es_client)):
+async def show_results(request: Request, catalog_id: str, query: str, category: str, brand: str, client=Depends(get_es_client)):
     catalogs = get_catalogs(mongo_db)
     filters = {
-        "category": category
+        "category": category,
+        "brand": brand
     }
     results = client.vector_search(catalog_id, "product", query, filters)
     return templates.TemplateResponse("results.html", {"request": request, "query": query, "hits": results,
