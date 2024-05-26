@@ -1,6 +1,7 @@
 import io
 
 import pandas as pd
+import urllib.parse
 
 from fastapi import APIRouter, Request, Response, Depends, Form, UploadFile, File
 from starlette import status
@@ -82,28 +83,43 @@ async def paroduct_landing_page(request: Request):
 
 
 @router.post("/products/search", response_class=RedirectResponse, include_in_schema=False)
-async def product_search(query: str = Form(...), catalog_id: str = Form(...)):
-    return f"/products/results?catalog_id={catalog_id}&query={query}"
+async def product_search(query: str = Form(...), catalog_id: str = Form(...), category: str = Form("")):
+    params = {
+        "catalog_id": catalog_id,
+        "query": query,
+        "category": category
+    }
+    encoded = urllib.parse.urlencode(params)
+    return f"/products/results?{encoded}"
 
 
 @router.post("/products/results", response_class=HTMLResponse, include_in_schema=False)
-async def show_results(request: Request, catalog_id: str, query: str, client=Depends(get_es_client)):
+async def show_results(request: Request, catalog_id: str, query: str, category: str, client=Depends(get_es_client)):
     catalogs = get_catalogs(mongo_db)
-    results = client.vector_search(catalog_id, "product", query)
+    filters = {
+        "category": category
+    }
+    results = client.vector_search(catalog_id, "product", query, filters)
     return templates.TemplateResponse("results.html", {"request": request,
                                                        "query": query,
                                                        "hits": results,
                                                        "catalogs": catalogs,
-                                                       "catalog_id": catalog_id})
+                                                       "catalog_id": catalog_id,
+                                                       "category": category
+                                                       })
 
 
 @router.get("/products/results", response_class=HTMLResponse, include_in_schema=False)
-async def show_results(request: Request, catalog_id: str, query: str, client=Depends(get_es_client)):
+async def show_results(request: Request, catalog_id: str, query: str, category: str, client=Depends(get_es_client)):
     catalogs = get_catalogs(mongo_db)
-    results = client.vector_search(catalog_id, "product", query)
+    filters = {
+        "category": category
+    }
+    results = client.vector_search(catalog_id, "product", query, filters)
     return templates.TemplateResponse("results.html", {"request": request, "query": query, "hits": results,
                                                        "catalogs": catalogs,
-                                                       "catalog_id": catalog_id
+                                                       "catalog_id": catalog_id,
+                                                       "category": category
                                                        })
 
 

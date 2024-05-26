@@ -11,7 +11,7 @@ class ElasticsearchClient:
         "product",
         "description",
     ]
-    
+
     keyword_keys = [
         "category",
         "sub_category",
@@ -24,47 +24,34 @@ class ElasticsearchClient:
         self.client = client
         self.model = model
 
-    def vector_search(self, catalog_id, field, question):
-        query_vector_product = self.model.encode(question)
+    def vector_search(self, catalog_id, field, question, filters: dict=None):
+        # query_vector_product = self.model.encode(question)
         script_query = {
             "bool": {
-                "should": [
+                "must": [
+                    {"term": {"catalog_id": catalog_id}},
                     {
-                        "script_score": {
-                            "min_score": 1.3,
-                            "query": {
-                                "bool": {
-                                    "must": [
-                                        {"exists": {"field": "product_dense_vector"}}
-                                    ],
-                                    "filter": [
-                                        {"term": {"catalog_id": catalog_id}}
-                                    ]
-                                }
-                            },
-                            "script": {
-                                "source": f"cosineSimilarity(params.query_vector, '{field}_dense_vector') + 1.0",
-                                "params": {"query_vector": query_vector_product},
-                            },
-                        }
-                    },
-                    {
-                        "bool": {
-                            "must": [
-                                {"term": {"catalog_id": catalog_id}},
-                                {
-                                    "multi_match": {
-                                        "query": question,
-                                        "fields": ["product", "description"]
-                                    }
-                                }
-                            ]
+                        "multi_match": {
+                            "query": question,
+                            "fields": ["product", "description"]
                         }
                     }
-                ],
-                "minimum_should_match": 1
+                ]
             }
         }
+        if filters:
+            filter_clause = [
+                {
+                    "term": {
+                        k: v
+                    }
+                }
+                for k, v in filters.items()
+                if v
+            ]
+            if filter_clause and len(filter_clause) > 0:
+                script_query["bool"]["filter"] = filter_clause
+        print("====query:", script_query)
         response = self.client.search(
             index=self.index_name, body={"query": script_query}
         )
