@@ -117,7 +117,7 @@ class ElasticsearchClient:
             "query": {
                 "bool": {
                     "must": [
-                        {"exists": {"field": "product_dense_vector"}}
+                        {"exists": {"field": "product_hi"}}
                     ],
                     "filter": [
                         {"term": {"catalog_id": catalog_id}}
