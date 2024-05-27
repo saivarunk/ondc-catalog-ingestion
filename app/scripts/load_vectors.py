@@ -10,7 +10,7 @@ kafka_bootstrap_servers = 'localhost:9092'
 kafka_topic = 'index-products'
 
 # Read the CSV file
-csv_file = "src/dataset/BigBasketProducts.csv"
+csv_file = "app/dataset/BigBasketProducts.csv"
 dataset = pd.read_csv(csv_file)
 
 dataset['product'] = dataset['product'].fillna("")

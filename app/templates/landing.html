@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex justify-center h-screen">
+        <div class="w-full max-w-6xl p-4">
+        <div class="flex justify-between items-center mb-4 ml-4">
+                <h1 class="text-2xl font-bold">Catalogs</h1>
+                <button onclick="location.href='/add-catalog'" class="bg-indigo-600 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Add Catalog
+                </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for catalog in catalogs %}
+                <div class="card">
+                    <h3>{{ catalog['name'] }}</h3>
+                    <br>
+                    <div class="flex space-x-2 mb-2">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-sm font-semibold mr-2 px-2.5 py-0.5 rounded">
+                            Indexed: {{ catalog['doc_count'][0] }}
+                        </span>
+                        <span class="inline-block bg-green-100 text-green-800 text-sm font-semibold mr-2 px-2.5 py-0.5 rounded">
+                            Indexed for Enhanced Search: {{ catalog['doc_count'][1] }}
+                        </span>
+                    </div>
+                <div class="flex justify-end mt-5">
+                    <a href="/index-catalog/{{ catalog['_id'] }}" class="bg-indigo-600 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Index Products
+                    </a>
+                </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

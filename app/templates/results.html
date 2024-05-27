@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex w-full">
+        <form action="/products/search" method="post" class="p-4 bg-white shadow-md rounded-md w-full">
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-4 w-full">
+                <div class="w-full">
+                    <label for="catalog_id" class="block text-sm font-medium text-gray-700 mb-1">Select Catalog</label>
+                    <select name="catalog_id" id="catalog_id" class="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                        <option value="" disabled selected>Select Catalog</option>
+                        {% for catalog in catalogs %}
+                            <option value="{{ catalog['_id'] }}" {% if catalog['_id']|string == catalog_id %}selected{% endif %}>{{ catalog['name'] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="w-full">
+                    <label for="query" class="block text-sm font-medium text-gray-700 mb-1">Search products</label>
+                    <input type="text" name="query" id="query" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Search products.." value="{{ query }}" required />
+                </div>
+                <div class="w-full">
+                    <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <input type="text" name="category" id="category" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Select category" value="{{ category }}" />
+                </div>
+                <div class="w-full">
+                    <label for="brand" class="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                    <input type="text" name="brand" id="brand" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Select brand" value="{{ brand }}" />
+                </div>
+                <div class="w-full mt-6">
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
+</div>
+<div class="text-center mt-10">
+    <h1 class="text-2xl font-bold mb-6 text-left">Search Results for "{{ query }}"</h1>
+    <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
+        {% for hit in hits %}
+            <div class="bg-white rounded-lg shadow-md p-4 text-left">
+                <h2 class="text-lg font-semibold">{{ hit._source.product }}</h2>
+                <p class="text-gray-500 mb-2">Category: </p>
+                    <span class="py-2.2 px-3.6 text-xs rounded-1.8 inline-block whitespace-nowrap text-center bg-slate-200 text-slate-650 align-baseline font-bold leading-none">
+                        {{ hit._source.category }}
+                    </span>
+                <p class="text-gray-700 mb-2">{{ hit._source.description }}</p>
+                <div class="flex justify-between">
+                    <p class="text-gray-700">Brand: {{ hit._source.brand }}</p>
+                    <div
+                    class="ml-4 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-green-200 text-green-700 rounded-full"
+                >
+                ₹ {{ hit._source.sale_price }}
+                </div>
+                </div>
+                <div class="flex justify-between mt-10">
+                    <p class="text-gray-700">Rating: {{ hit._source.rating }}</p>
+{#                    <p class="text-gray-700">Score: {{ hit._score }}</p>#}
+                    <div
+                        class="text-xs inline-flex items-center font-bold leading-sm px-3 py-1 bg-blue-200 text-blue-700 rounded-full"
+                    >
+                        {{ hit._source.type }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

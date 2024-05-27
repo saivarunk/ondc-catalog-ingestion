@@ -23,15 +23,18 @@ https://www.kaggle.com/datasets/surajjha101/bigbasket-entire-product-list-28k-da
 - Elasticsearch
 - Kibana
 - Kafka
+- MongoDB
+- Redis
+- Celery
 
 ### Video Presentation
 
-https://bit.ly/indexvoyagers-ondc-hackathon-video
+https://bit.ly/indexvoyagers-ondc-hackathon-dday-video
 
 ### Instructions for setup
 
 - The repository uses Makefile for orchestrating the services.
-- .env file has config parameters related to Elasticsearch, Kibana
+- .env file has config parameters related to Elasticsearch, Kibana, MongoDB
 
 ## Starting the Docker Services
 
@@ -49,8 +52,6 @@ docker compose ps
 - Elasticsearch can be accessed here: http://localhost:9200
 - Kibana can be accessed here: http://localhost:5601
 - Backend service: http://localhost:80
-- Kafka can be accessed here: kafka:29092, http://localhost:9092
-- Kafdrop (Kafka UI) can be accessed here: http://localhost:9000
 
 Application UI can be accessed here: http://localhost:80
 Swagger Docs can be accessed here: http://localhost:80/docs

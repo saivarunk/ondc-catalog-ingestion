@@ -8,7 +8,7 @@ class loadTest(HttpUser):
         self.documents = self.read_dataset()
 
     def read_dataset(self):
-        csv_file = "src/dataset/BigBasketProducts.csv"
+        csv_file = "app/dataset/BigBasketProducts.csv"
         dataset = pd.read_csv(csv_file)
         dataset['product'] = dataset['product'].fillna("")
         dataset['rating'] = dataset['rating'].fillna(0)
