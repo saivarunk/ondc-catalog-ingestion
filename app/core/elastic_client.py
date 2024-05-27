@@ -77,17 +77,10 @@ class ElasticsearchClient:
                 "_source": document.dict(),
             }
             if enable_vector_indexing:
-                # get translation using product.product as key in translation collection
                 translation = translation_collection.find_one({"key": document.product})
                 if translation:
                     action["_source"]["product_hi"] = translation.get("hi", "")
                     action["_source"]["product_ka"] = translation.get("ka", "")
-                # for key, value in document.dict().items():
-                #     if key in self.supported_keys and value:
-                #         dense_vectors = self.model.encode(value)
-                #         if len(dense_vectors) > 0:
-                #             action["_source"][f"{key}_dense_vector"] = dense_vectors
-            print(action)
             actions.append(action)
 
         try:

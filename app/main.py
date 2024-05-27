@@ -1,7 +1,9 @@
 import asyncio
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.openapi.utils import get_openapi
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.templating import Jinja2Templates
 
 from app.routes.views import router as views_router
 from app.routes.products import router as product_router
@@ -15,6 +17,16 @@ app.include_router(catalog_router, prefix="/api/v1")
 app.include_router(product_router, prefix="/api/v1")
 
 app.mount("/static", StaticFiles(directory="app/templates/images"), name="static")
+
+templates = Jinja2Templates(directory="app/templates")
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    print(f"Exception: {str(exc)}")
+    return templates.TemplateResponse("error.html", {"request": request, "detail": str(exc)},
+                                      status_code=HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 def custom_openapi():
     if app.openapi_schema:

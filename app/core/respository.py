@@ -1,3 +1,5 @@
+import time
+
 from typing import List
 
 from bson.objectid import ObjectId
@@ -24,6 +26,7 @@ def create_catalog(db: Database, catalog: CatalogCreate):
 def create_product_bulk(db: Database, catalog_id: str, products: List[Product]):
     product_collection = get_product_collection(db)
     operations = []
+    start = time.time()
     for product in products:
         product_dict = product.dict()
         product_dict["catalog_id"] = catalog_id
@@ -35,7 +38,13 @@ def create_product_bulk(db: Database, catalog_id: str, products: List[Product]):
                 upsert=True,
             )
         )
+    end = time.time()
+    print("Time taken to prepare operations", end - start)
+
+    start = time.time()
     result = product_collection.bulk_write(operations)
+    end = time.time()
+    print("Time taken to write to MongoDB", end - start)
     print("result", result)
     return result.bulk_api_result
 
